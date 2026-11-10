@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:neumorphic_calculator/controllers/theme_controller.dart';
 import 'package:neumorphic_calculator/screens/dashboard_screen/dashboard_controller.dart';
 import 'package:neumorphic_calculator/screens/history_screen/history_controller.dart';

@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:neumorphic_calculator/widgets/glass.dart';
 
 class ResultWidget extends StatelessWidget {
   final String result;
@@ -8,24 +9,22 @@ class ResultWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final primaryColor = theme.colorScheme.primary;
-    final formatError = result.toLowerCase().contains('error');
+    final palette = GlassPalette.of(context);
+    final isError = result.toLowerCase().contains('error');
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 22.0),
       alignment: Alignment.centerRight,
       child: AutoSizeText(
         result,
         style: TextStyle(
-            fontSize: 80,
-            color: formatError
-                ? Colors.red
-                : isDark
-                    ? theme.iconTheme.color
-                    : primaryColor),
-        minFontSize: 20,
-        maxFontSize: 80,
+          fontSize: 40,
+          fontWeight: FontWeight.w500,
+          color: isError
+              ? const Color(0xFFFF6B6B)
+              : Color.lerp(palette.accent, palette.onGlass, 0.25),
+        ),
+        minFontSize: 16,
+        maxFontSize: 40,
         maxLines: 1,
       ),
     );

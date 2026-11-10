@@ -27,9 +27,9 @@ dependencies:
   system_theme: ^3.0.0
   get: ^4.7.2
   smooth_page_indicator: ^1.2.1
-  lucide_icons: ^0.257.0
   flutter_launcher_icons: ^0.14.4
   package_info_plus: ^8.3.0
+  lucide_icons_flutter: ^4.0.3
 
 dev_dependencies:
   flutter_test:

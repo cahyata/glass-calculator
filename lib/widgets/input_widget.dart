@@ -1,6 +1,6 @@
 import 'package:auto_size_text_field/auto_size_text_field.dart';
 import 'package:flutter/material.dart';
-import 'package:neumorphic_calculator/utils/extensions/theme_extension.dart';
+import 'package:neumorphic_calculator/widgets/glass.dart';
 
 class InputWidget extends StatelessWidget {
   final TextEditingController controller;
@@ -9,25 +9,28 @@ class InputWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final primaryColor = theme.colorScheme.primary;
-    final isDark = theme.isDarkMode;
+    final palette = GlassPalette.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: AutoSizeTextField(
         controller: controller,
         autofocus: true,
         textAlign: TextAlign.right,
         style: TextStyle(
-            fontSize: 90, color: isDark ? primaryColor : theme.iconTheme.color),
-        minFontSize: 12,
-        maxFontSize: 90,
+          fontSize: 56,
+          fontWeight: FontWeight.w300,
+          color: palette.onGlass,
+        ),
+        minFontSize: 14,
+        maxFontSize: 56,
         maxLines: 1,
-        cursorColor: primaryColor,
-        cursorWidth: 4,
+        cursorColor: palette.accent,
+        cursorWidth: 3,
+        cursorRadius: const Radius.circular(2),
         showCursor: true,
         readOnly: true,
         decoration: const InputDecoration(
+          isCollapsed: true,
           border: InputBorder.none,
           focusedBorder: InputBorder.none,
           enabledBorder: InputBorder.none,

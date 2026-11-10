@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fraction/fraction.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
-import 'package:math_expressions/math_expressions.dart';
+import 'package:neumorphic_calculator/utils/math_engine.dart';
 import 'package:neumorphic_calculator/utils/result_model.dart';
 
 var logger = Logger(
@@ -17,38 +17,24 @@ extension CalculatorExtension on String {
   bool isNoSelection(int? offset) =>
       offset == null || offset == -1 || offset == length;
 
-  bool get endsWithOperator => endsWithAny(['x', '÷', '+', '-']);
+  bool get endsWithOperator => endsWithAny(['x', '÷', '+', '-', '^']);
 
   bool get isValidForCalculation => isNotEmpty && !endsWithOperator;
 
-  ResultModel calculate(
-      {bool skipErrorChecking = false, GrammarParser? parser}) {
-    GrammarParser p = parser ?? GrammarParser();
-    String finalInput = _fixParenthesis._replaceOperationSymbols.removeCommas;
-    bool hasFraction = finalInput.contains('.');
+  ResultModel calculate({bool skipErrorChecking = false, bool degrees = true}) {
     try {
-      Expression exp = p.parse(finalInput);
-      RealEvaluator expEvaluator = RealEvaluator();
-
-      num eval = expEvaluator.evaluate(exp);
-      if (eval % 1 == 0 && !hasFraction) {
-        return ResultModel(
-            output: eval.toInt().toString(),
-            expression: this,
-            dateTime: DateTime.now());
-      } else {
-        return ResultModel(
-            output: eval.toString(),
-            expression: this,
-            dateTime: DateTime.now());
-      }
+      final value = MathEngine.evaluate(_fixParenthesis, degrees: degrees);
+      return ResultModel(
+          output: MathEngine.format(value),
+          expression: this,
+          dateTime: DateTime.now());
+    } on MathError catch (e) {
+      if (skipErrorChecking) return ResultModel.empty();
+      return ResultModel.error(e.message);
     } catch (e, stack) {
       logger.e('Error calculating', stackTrace: stack, error: e);
-      if (skipErrorChecking) {
-        return ResultModel.empty();
-      } else {
-        return ResultModel.formatError();
-      }
+      if (skipErrorChecking) return ResultModel.empty();
+      return ResultModel.formatError();
     }
   }
 
@@ -66,14 +52,25 @@ extension CalculatorExtension on String {
     return fraction.toString();
   }
 
+  /// A readable mixed fraction for a decimal result, or a blank when the
+  /// value has no reasonably small denominator.
+  String get toDisplayFraction {
+    if (!isDouble || isInt || contains('E')) return ' ';
+    try {
+      final fraction = MixedFraction.fromDouble(double.parse(removeCommas));
+      if (fraction.denominator > 1000) return ' ';
+      return fraction.toString();
+    } catch (_) {
+      return ' ';
+    }
+  }
+
+  /// Whether the expression is worth evaluating live: it must be complete and
+  /// more than a plain number.
   bool get canCalculate {
-    if (input.isEmpty || !input.containsAny(['x', '÷', '+', '-'])) {
-      return false;
-    }
-    if (input.endsWithAny(['x', '÷', '+', '-'])) {
-      return false;
-    }
-    return true;
+    if (input.isEmpty) return false;
+    if (input.endsWithAny(['x', '÷', '+', '-', '^', '(', 'E'])) return false;
+    return double.tryParse(input.removeCommas) == null;
   }
 
   int count(String countValue) {
@@ -81,9 +78,11 @@ extension CalculatorExtension on String {
   }
 
   String formatExpression() {
+    // Error messages and mixed fractions ("1 1/2") are shown as they are.
+    if (toLowerCase().contains('error') || contains('/')) return this;
     String expression = removeSpaces.removeCommas;
     String parts = expression.splitMapJoin(
-      RegExp(r"[+\-x÷%()]"),
+      _tokenPattern,
       onMatch: (m) => m.group(0) ?? '',
       onNonMatch: (n) {
         if (n.isEmpty) return '';
@@ -133,9 +132,10 @@ extension CalculatorExtension on String {
     }
   }
 
-  String get _replaceOperationSymbols {
-    return replaceAll('x', '*').replaceAll('÷', '/').replaceAll('%', '/100');
-  }
+  /// Everything in an expression that is not a plain number: numbers in
+  /// scientific notation (kept whole), function names, operators, constants.
+  static final RegExp _tokenPattern = RegExp(
+      r"\d+\.?\d*E[+\-]?\d+|sin⁻¹|cos⁻¹|tan⁻¹|sin|cos|tan|log|abs|ln|[+\-x÷%()^!√∛πeE]");
 
   String get _fixParenthesis {
     int openParenthesis = count('(');

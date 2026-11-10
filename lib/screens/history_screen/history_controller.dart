@@ -19,30 +19,55 @@ class HistoryController extends GetxController
     _loadData();
   }
 
-  void _loadData() {
-    final result = _database.get<List<String>>(AppConst.historyKey);
+  /// Oldest entries are dropped beyond this.
+  static const int maxEntries = 200;
 
-    switch (result) {
-      case List<String> value:
-        if (value.isEmpty) {
-          change([], status: RxStatus.empty());
-        } else {
-          final List<ResultModel> results = value
-              .map((String e) => ResultModel.fromJson(jsonDecode(e)))
-              .toList();
-          change(results, status: RxStatus.success());
-        }
-        break;
-      default:
-        change(null, status: RxStatus.error('Expression history = 0'));
+  void _loadData() {
+    final stored = _database.get<List<String>>(AppConst.historyKey);
+    if (stored == null || stored.isEmpty) {
+      change([], status: RxStatus.empty());
+      return;
     }
+
+    final results = <ResultModel>[];
+    for (final raw in stored) {
+      try {
+        results.add(ResultModel.fromJson(jsonDecode(raw)));
+      } catch (_) {
+        // A damaged entry must not take the whole history down with it.
+      }
+    }
+    // Drop damaged entries for good so list positions stay aligned with
+    // what is stored (removeAt relies on that).
+    if (results.length != stored.length) {
+      _database.set<List<String>>(AppConst.historyKey,
+          results.map((r) => jsonEncode(r.toJson())).toList());
+    }
+    change(results,
+        status: results.isEmpty ? RxStatus.empty() : RxStatus.success());
   }
 
   void addData(ResultModel resultModel) {
-    final List<String> history =
-        _database.get<List<String>>(AppConst.historyKey) ?? [];
+    final history = List<String>.of(
+        _database.get<List<String>>(AppConst.historyKey) ?? const []);
     history.insert(0, jsonEncode(resultModel.toJson()));
+    if (history.length > maxEntries) {
+      history.removeRange(maxEntries, history.length);
+    }
     _database.set<List<String>>(AppConst.historyKey, history);
+    _loadData();
+  }
+
+  void removeAt(int index) {
+    final history = List<String>.of(
+        _database.get<List<String>>(AppConst.historyKey) ?? const []);
+    if (index < 0 || index >= history.length) return;
+    history.removeAt(index);
+    if (history.isEmpty) {
+      _database.remove(AppConst.historyKey);
+    } else {
+      _database.set<List<String>>(AppConst.historyKey, history);
+    }
     _loadData();
   }
 

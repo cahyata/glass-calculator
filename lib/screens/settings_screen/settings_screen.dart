@@ -39,6 +39,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return GetBuilder<SettingsController>(builder: (settingsCtrl) {
       final settings = settingsCtrl.state ?? SettingsModel.normal();
       return Scaffold(
+        backgroundColor: Colors.transparent,
         body: ListView(
           physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),

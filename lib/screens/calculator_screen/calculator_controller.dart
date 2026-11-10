@@ -4,7 +4,9 @@ import 'package:get/get.dart';
 import 'package:neumorphic_calculator/screens/history_screen/history_controller.dart';
 import 'package:neumorphic_calculator/screens/settings_screen/settings_controller.dart';
 import 'package:neumorphic_calculator/utils/extensions/extensions.dart';
+import 'package:neumorphic_calculator/utils/math_engine.dart';
 import 'package:neumorphic_calculator/utils/result_model.dart';
+import 'package:neumorphic_calculator/widgets/scientific_panel.dart';
 
 class CalculatorController extends GetxController {
   static CalculatorController get instance => Get.find<CalculatorController>();
@@ -14,6 +16,18 @@ class CalculatorController extends GetxController {
   String get exp => textCtrl.text;
 
   bool isClearing = false;
+
+  /// Angle unit for trigonometric functions.
+  bool isDegree = true;
+
+  /// Whether the scientific keys show their second functions.
+  bool isInverse = false;
+
+  /// Whether the scientific tray is expanded.
+  bool showScientific = true;
+
+  /// Result of the last completed calculation, typed by the Ans key.
+  String lastAnswer = '';
   final textCtrl = TextEditingController();
 
   int get baseOffset => textCtrl.selection.baseOffset;
@@ -66,11 +80,11 @@ class CalculatorController extends GetxController {
     int newOffset = -1;
     if (exp.isNoSelection(position)) {
       if (exp.isEmpty) {
-        if (operator == '-') newExp = operator;
-        return;
-      }
-
-      if (operator == '-' && exp.endsWithAny(['x', '÷', '+'])) {
+        // Only a leading minus makes sense on an empty expression.
+        if (operator != '-') return;
+        newExp = operator;
+      } else if (operator == '-' &&
+          exp.endsWithAny(['x', '÷', '+', '^', '('])) {
         newExp = (exp + operator);
       } else if (exp.endsWithOperator) {
         if (exp.length > 1) {
@@ -80,7 +94,6 @@ class CalculatorController extends GetxController {
         }
       } else {
         newExp = (exp + operator);
-        // offset.value = -1;
       }
     } else {
       final rawExp = exp.removeCommas;
@@ -94,21 +107,33 @@ class CalculatorController extends GetxController {
     updateExpression(newExp, newOffset);
   }
 
+  /// Inserts a scientific token (function, constant, power...) as-is.
+  void _insertToken(String token, [int? position]) {
+    if (exp.isNoSelection(position)) {
+      updateExpression(exp + token, null);
+      return;
+    }
+    final rawExp = exp.removeCommas;
+    final rawPosition = _mapFormattedOffsetToRaw(exp, position!);
+    final raw = rawExp.substring(0, rawPosition) +
+        token +
+        rawExp.substring(rawPosition);
+    final formatted = raw.formatExpression();
+    updateExpression(
+      formatted,
+      _mapRawOffsetToFormatted(raw, formatted, rawPosition + token.length),
+    );
+  }
+
   void _addDecimal([int? position]) {
     String newExp;
     int newOffset = -1;
-    if (exp.isEmpty) {
-      newExp = '0.';
-    }
 
     if (exp.isNoSelection(position)) {
-      final parts = exp.split(RegExp(r"[+\-x÷%]"));
-      if (!parts.last.contains('.')) {
-        newExp = '$exp.';
-      } else {
-        // If the last part already contains a decimal, do nothing
-        return;
-      }
+      // The number currently being typed is the trailing run of digits.
+      final current = RegExp(r'[\d.,]*$').stringMatch(exp) ?? '';
+      if (current.contains('.')) return;
+      newExp = current.isEmpty ? '${exp}0.' : '$exp.';
     } else {
       final rawExp = exp.removeCommas;
       final rawPosition = _mapFormattedOffsetToRaw(exp, position!);
@@ -129,7 +154,8 @@ class CalculatorController extends GetxController {
     }
 
     try {
-      final result = exp.calculate(skipErrorChecking: skipError);
+      final result =
+          exp.calculate(skipErrorChecking: skipError, degrees: isDegree);
       output = result.output;
     } catch (_) {
       output = 'Invalid expression';
@@ -137,23 +163,27 @@ class CalculatorController extends GetxController {
   }
 
   void _equals() {
-    if (output.isEmpty || output.contains('/') || output.endsWithOperator) {
+    if (output.isEmpty ||
+        output.contains('/') ||
+        output.endsWithOperator ||
+        output.toLowerCase().contains('error')) {
       return;
     }
-    final isOutputValid = output.isDouble && !output.isInt;
     final newExp = output;
-    output = isOutputValid ? output.toFraction : ' ';
+    lastAnswer = output;
+    output = output.toDisplayFraction;
     updateExpression(newExp, null, autoCalculate: false);
   }
 
   void _delete([int? position]) {
-    // if (exp.isEmpty) {
-    //   expression.value = exp;
-    //   return;
-    // }
+    if (exp.isEmpty) return;
 
     if (exp.isNoSelection(position)) {
-      final newExp = exp.removeLastChar;
+      // A function such as "sin(" is removed in one go.
+      final fn = kFunctionTokens.firstWhereOrNull((f) => exp.endsWith(f));
+      final newExp = fn != null
+          ? exp.substring(0, exp.length - fn.length)
+          : exp.removeLastChar;
       if (!newExp.canCalculate) {
         output = '';
       }
@@ -162,7 +192,6 @@ class CalculatorController extends GetxController {
       final result = exp.removeCharAt(position!);
       updateExpression(result.$1, result.$2);
     }
-    _mediumHaptic();
   }
 
   void _addParentheses(String p, [int? position]) {
@@ -220,19 +249,34 @@ class CalculatorController extends GetxController {
     }
   }
 
+  /// Records a completed calculation. Every evaluation is kept, repeats
+  /// included; only failed ones and bare numbers (nothing was calculated)
+  /// are skipped.
   void _saveResult(String expression, String output) {
-    if (output.toLowerCase().contains('error') || output.isEmpty) return;
-    final result = ResultModel(
+    if (output.trim().isEmpty || output.toLowerCase().contains('error')) {
+      return;
+    }
+    if (double.tryParse(expression.removeCommas) != null) return;
+    Get.find<HistoryController>().addData(ResultModel(
       output: output,
       expression: expression,
       dateTime: DateTime.now(),
-    );
+      degrees: isDegree,
+    ));
+  }
 
-    final historyController = Get.find<HistoryController>();
-    final history = historyController.state ?? [];
-    if (history.isEmpty || history.first != result) {
-      historyController.addData(result);
-    }
+  /// Puts a past calculation back on the display, in its original angle mode.
+  void loadFromHistory(ResultModel entry) {
+    isDegree = entry.degrees;
+    updateExpression(entry.expression, -1);
+  }
+
+  /// Uses a past result as a value: it continues the expression when an
+  /// operator is waiting for an operand, otherwise it replaces it.
+  void insertHistoryResult(String result) {
+    final continues =
+        exp.isNotEmpty && (exp.endsWithOperator || exp.endsWith('('));
+    updateExpression(continues ? exp + result : result, -1);
   }
 
   void onClearAllPressed() {
@@ -248,11 +292,44 @@ class CalculatorController extends GetxController {
 
   void onEqualPressed() {
     final exp = this.exp;
-    final output = this.output;
     _calculate();
+    final result = output;
     _equals();
-    _saveResult(exp, output);
+    _saveResult(exp, result);
     _heavyHaptic();
+  }
+
+  /// Handles a key from the scientific tray.
+  void onTokenPressed(String token) {
+    if (token == kAnsToken) {
+      if (lastAnswer.isEmpty) return;
+      token = lastAnswer;
+    }
+    _insertToken(token, baseOffset);
+    if (isInverse) isInverse = false;
+    update();
+    _mediumHaptic();
+  }
+
+  void toggleAngleMode() {
+    isDegree = !isDegree;
+    if (exp.canCalculate) {
+      _calculate(skipError: true);
+    }
+    update();
+    _mediumHaptic();
+  }
+
+  void toggleInverse() {
+    isInverse = !isInverse;
+    update();
+    _mediumHaptic();
+  }
+
+  void toggleScientific() {
+    showScientific = !showScientific;
+    update();
+    _mediumHaptic();
   }
 
   void onDecimalPressed() {

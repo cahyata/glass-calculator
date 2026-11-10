@@ -23,7 +23,7 @@ class SettingsModel extends Equatable {
     return const SettingsModel(
       hapticEnabled: true,
       dynamicColor: false,
-      buttonRadius: 12.0,
+      buttonRadius: 45.0,
       showHistoryTip: true,
       scientific: false,
       themeColor: ThemeColor.tealBlue,
@@ -66,7 +66,7 @@ class SettingsModel extends Equatable {
       hapticEnabled: map['hapticEnabled'] ?? true,
       scientific: map['scientific'] ?? false,
       dynamicColor: map['dynamicColor'] ?? false,
-      buttonRadius: map['buttonRadius'] ?? 12.0,
+      buttonRadius: map['buttonRadius'] ?? 45.0,
       font: Fonts.values[map['font'] ?? 0],
       showHistoryTip: map['showHistoryTip'] ?? true,
       themeColor: ThemeColor.values[map['themeColor'] ?? 0],

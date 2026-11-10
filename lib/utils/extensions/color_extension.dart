@@ -6,17 +6,18 @@ extension ColorExtension on Color {
     return ThemeData(
         textTheme: textTheme,
         splashColor: const Color.fromRGBO(207, 88, 41, 1),
-        scaffoldBackgroundColor:
-            brightness == Brightness.dark ? const Color(0xff374353) : null,
+        scaffoldBackgroundColor: brightness == Brightness.dark
+            ? const Color(0xFF0B0E22)
+            : const Color(0xFFEAF0FF),
         appBarTheme: AppBarTheme(
           systemOverlayStyle: brightness == Brightness.dark
               ? SystemUiOverlayStyle.light.copyWith(
                   statusBarColor: Colors.transparent,
-                  systemNavigationBarColor: const Color(0xff374353),
+                  systemNavigationBarColor: const Color(0xFF0B0E22),
                 )
               : SystemUiOverlayStyle.dark.copyWith(
                   statusBarColor: Colors.transparent,
-                  systemNavigationBarColor: const Color(0xffFAFBFF),
+                  systemNavigationBarColor: const Color(0xFFEAF0FF),
                 ),
         ),
         colorScheme: ColorScheme.fromSeed(
