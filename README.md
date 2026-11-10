@@ -1,90 +1,43 @@
-# Neumorphic Calculator
+# Glass Calculator
 
-A beautifully designed, customizable calculator app with a soft, modern neumorphic style. Built in Flutter for Android and iOS.
+A scientific calculator with a liquid glass design, built in Flutter.
 
-![Calculator Screenshot](https://cdn.dribbble.com/users/2986824/screenshots/14757121/media/7754c4eac87d79773937886400d0d95d.png)
-
-**Download:**
-
-[<img src="https://github.com/user-attachments/assets/a50513b3-dbf8-48c1-bff8-1f4215fefbb9"
-alt="Get it on GitHub"
-height="80">](https://github.com/mllrr96/Neumorphic-Calculator/releases) [<img src="https://f-droid.org/badge/get-it-on.png"
-alt="Get it on F-Droid"
-height="80">](https://f-droid.org/packages/com.ragheb.neumorphic_calculator)
-
-**iOS:** Due to App Store restrictions, sideloading is required, checkout [Sideloadly](https://sideloadly.io/) or [AltStore](https://altstore.io/) for more info about sideloading.
-
-## Screenshots
-<div style="text-align: center">
-    <table>
-        <tr>
-            <td style="text-align: center">
-                <img src="https://github.com/mllrr96/Neumorphic-Calculator/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot%20(1).png" width="220"/>
-            </td>            
-            <td style="text-align: center">
-                <img src="https://github.com/mllrr96/Neumorphic-Calculator/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot%20(4).png" width="220"/>
-            </td>   
-            <td style="text-align: center">
-                <img src="https://github.com/mllrr96/Neumorphic-Calculator/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/Screenshot%20(3).png" width="220"/>
-            </td>      
-        </tr>
-    </table>
-</div>
-
+Forked from [Neumorphic Calculator](https://github.com/mllrr96/Neumorphic-Calculator)
+by Mohammed Ragheb (MIT). The original neumorphic look has been replaced and the
+calculator extended.
 
 ## Features
 
-- **Dark Mode:** Easy on the eyes with automatic light and dark themes.
-- **Custom Themes:** Choose the look that suits your style best.
-- **Personalized Buttons:** Adjust button shapes and styles the way you like.
-- **Font Options:** Pick a font you love for the perfect look.
-- **Calculation History:** Quickly review and recall your past calculations.
+- **Liquid glass UI:** frosted panels, glass keys and a softly animated background,
+  in light and dark.
+- **Scientific mode:** sin, cos, tan and their inverses, ln, log, powers, roots,
+  factorial, π, e, EE and Ans, with a DEG/RAD switch and a 2nd key.
+- **Calculation history:** every calculation is recorded, grouped by day. Tap to
+  reuse, use or copy a result, swipe to delete.
+- **Themes:** Auto/Light/Dark and a choice of accent colors, fonts and button radius.
 
+## Run it
 
-## Build it yourself
+```bash
+git clone <this repository>
+cd glass-calculator
+flutter pub get
+flutter run
+```
 
-1. Clone the repository:
+Web works out of the box (`flutter run -d chrome`).
 
-   ```bash
-   git clone https://github.com/mllrr96/Neumorphic-Calculator.git
-   ```
+## Platform support
 
-2. Navigate into the project directory:
-
-   ```bash
-   cd Neumorphic-Calculator
-   ```
-
-3. Install dependencies:
-
-   ```bash
-   flutter pub get
-
-4. Run the app:
-
-   ```bash
-   flutter run
-   ```
-
-
-## Platform Support
-
-- **Android:** Supported
-- **iOS:** Supported
-
-## Contributing
-
-Contributions are welcome! Please fork the repository and submit a pull request with your improvements.
+Android, iOS and web. A `windows/` folder is included, but building for Windows
+needs a working Visual Studio C++ toolchain.
 
 ## License
 
-This project is open source and available under the [MIT License](LICENSE).
+MIT, see [LICENSE](LICENSE). The original copyright notice is kept.
 
 ## Acknowledgements
 
-- Inspired by [Ulima Inas Shabrina](https://dribbble.com/shabrinaiu) design, [link](https://dribbble.com/shots/14757121-CALCULATOR) 
-- Built with [Flutter](https://flutter.dev/)
-
-## Contact
-
-For any inquiries or suggestions, please feel free to email me at [ragheb.github@gmail.com](mailto:ragheb.github@gmail.com).
+- [Neumorphic Calculator](https://github.com/mllrr96/Neumorphic-Calculator) by
+  Mohammed Ragheb, the project this is forked from.
+- Built with [Flutter](https://flutter.dev/).

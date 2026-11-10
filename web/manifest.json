@@ -1,6 +1,6 @@
 {
-    "name": "neumorphic_calculator",
-    "short_name": "neumorphic_calculator",
+    "name": "Glass Calculator",
+    "short_name": "Glass Calc",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

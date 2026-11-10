@@ -1,4 +1,4 @@
-A beautifully designed, customizable calculator app with a soft, modern neumorphic style. Built in Flutter..
+A scientific calculator with a liquid glass look: frosted panels, glass keys and an animated background. Built in Flutter.
 
 Features:
 

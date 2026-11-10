@@ -46,15 +46,15 @@ jobs:
           cd Payload
           ln -s ../Runner.app
           cd ..
-          zip -r Neumorphic-Calculator-${GITHUB_REF#refs/*/}.ipa Payload
+          zip -r Glass-Calculator-${GITHUB_REF#refs/*/}.ipa Payload
 
       - name: Rename APK Files
         run: |
           cd build/app/outputs/flutter-apk
-          mv app-armeabi-v7a-release.apk Neumorphic-Calculator-${GITHUB_REF_NAME}-armeabi-v7a.apk
-          mv app-arm64-v8a-release.apk Neumorphic-Calculator-${GITHUB_REF_NAME}-arm64-v8a.apk
-          mv app-x86_64-release.apk Neumorphic-Calculator-${GITHUB_REF_NAME}-x86_64.apk
-          mv app-release.apk  Neumorphic-Calculator-${GITHUB_REF_NAME}-universal.apk
+          mv app-armeabi-v7a-release.apk Glass-Calculator-${GITHUB_REF_NAME}-armeabi-v7a.apk
+          mv app-arm64-v8a-release.apk Glass-Calculator-${GITHUB_REF_NAME}-arm64-v8a.apk
+          mv app-x86_64-release.apk Glass-Calculator-${GITHUB_REF_NAME}-x86_64.apk
+          mv app-release.apk  Glass-Calculator-${GITHUB_REF_NAME}-universal.apk
 
       - name: Create Release
         uses: ncipollo/release-action@v1.13.0

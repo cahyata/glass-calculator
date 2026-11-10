@@ -30,11 +30,11 @@ Future<void> main() async {
     }
   });
 
-  runApp(const NeumorphicCalculatorApp());
+  runApp(const GlassCalculatorApp());
 }
 
-class NeumorphicCalculatorApp extends StatelessWidget {
-  const NeumorphicCalculatorApp({super.key});
+class GlassCalculatorApp extends StatelessWidget {
+  const GlassCalculatorApp({super.key});
 
   @override
   Widget build(BuildContext context) {

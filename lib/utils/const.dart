@@ -1,7 +1,7 @@
 class AppConst {
   AppConst._();
 
-  static const String appName = 'Neumorphic Calculator';
+  static const String appName = 'Glass Calculator';
   static const String githubLink =
       'https://github.com/mllrr96/Neumorphic-Calculator.git';
 

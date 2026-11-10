@@ -1,1 +1,1 @@
-A sleek, customizable calculator with a soft, modern, neumorphic-inspired design.
+A scientific calculator with a liquid glass design and full calculation history.
