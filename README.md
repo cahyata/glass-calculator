@@ -6,6 +6,21 @@ Forked from [Neumorphic Calculator](https://github.com/mllrr96/Neumorphic-Calcul
 by Mohammed Ragheb (MIT). The original neumorphic look has been replaced and the
 calculator extended.
 
+## Screenshots
+
+<table>
+  <tr>
+    <td><img src="docs/screenshots/calculator.png" width="260" alt="Calculator with the scientific panel"/></td>
+    <td><img src="docs/screenshots/history.png" width="260" alt="Calculation history"/></td>
+    <td><img src="docs/screenshots/settings.png" width="260" alt="Settings"/></td>
+  </tr>
+  <tr>
+    <td align="center">Calculator</td>
+    <td align="center">History</td>
+    <td align="center">Settings</td>
+  </tr>
+</table>
+
 ## Features
 
 - **Liquid glass UI:** frosted panels, glass keys and a softly animated background,
