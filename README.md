@@ -34,7 +34,7 @@ calculator extended.
 ## Run it
 
 ```bash
-git clone <this repository>
+git clone https://github.com/cahyata/glass-calculator.git
 cd glass-calculator
 flutter pub get
 flutter run

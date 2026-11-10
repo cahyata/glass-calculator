@@ -3,7 +3,7 @@ class AppConst {
 
   static const String appName = 'Glass Calculator';
   static const String githubLink =
-      'https://github.com/mllrr96/Neumorphic-Calculator.git';
+      'https://github.com/cahyata/glass-calculator.git';
 
   static const String swipeUpGesture = 'assets/lottie/swipe_up.json';
   static const String swipeRightGesture = 'assets/lottie/swipe_right.json';
